@@ -46,26 +46,29 @@
 /* set credentials */
 char* valid_username[USERCNT] = {"user1", "user2", "user3", "user4", "user5"};
 char* valid_password[USERCNT] = {"pass1", "pass2", "pass3", "pass4", "pass5"};
-char* clientName = NULL;
 
+char* clientName = NULL;
+char buffer[BUFSIZE];
+char* token = NULL;
+char* attemptPassword = NULL;
+char* correctPassword = NULL;
+char* keyPassword = NULL;
+char* encryptKey = NULL;
+char* command = NULL;
+char* dupCommand = NULL;
 
 time_t t;
 
 struct sockaddr_in client_address;
 struct sockaddr_in server_address;
 
-int i;
-int bytes;
-int option;
-int pid;
-int sock;
-int port=4513;
-int status;
-
+int bytes = 0;
+int pid = 0;
+int port = PORT;
+int randomNumber = 0;
+int commandCount = 0;
+int terminatorLocation = 0;
 int client_length;
-int accept_client;
-int waitpid_call;
-
 
 /* main */
 int main(int argc, char** argv)
@@ -80,12 +83,55 @@ int main(int argc, char** argv)
 	openServer();
 }
 
-/* TODO */
+/* counts commands from command line */
+int countInputs(char* command)
+{
+	token = strtok(command, " ");
+	while(token != NULL)
+	{
+		commandCount ++;
+		token = strtok(NULL, " ");
+	}
+	return commandCount;
+}
+
+/* stores commands from command line */
+void storeInputs(char** commandArray, char* command, int arrSize)
+{
+	i = 0;
+	token = strtok(command, " ");
+	commandArray[i] = strdup(token);
+	while(token != NULL)
+	{
+		i ++;
+		token = strtok(NULL, " ");
+		if(token == NULL)
+		{
+			break;
+		}
+		// commandArray[i] = strdup(token);
+		commandArray[i] = token;
+	}
+	return;
+}
+
+/* set server to connect to */
+void setServer()
+{
+	bzero((char*) &server_address, sizeof(server_address));
+
+	server_address.sin_family = AF_INET;
+	server_address.sin_addr.s_addr = htonl(INADDR_ANY);
+	server_address.sin_port = htons(port);
+	
+	ERROR_socket_call();
+	ERROR_bind_call(server_address);
+	ERROR_listen_call();
+}
 
 /* open the server */
 void openServer()
 {
-	//printf("Opening Server: %s with Port: %d!\n", server, port);
 	while(1)
 	{
 		// Wait for client connection.
@@ -98,119 +144,27 @@ void openServer()
 		pid = fork();
 		if(pid == 0)
 		{
-			char intBuf[BUFSIZE];
 			close(sock);
 			srand((unsigned)time(&t));
-			clientName = receiveMessageFromClient(accept_client);
-			if(validUsername(clientName))
-			{
-				int randNum = rand();
-				sprintf(intBuf, "%d", randNum);
-				sendMessageToClient(intBuf, accept_client);
-			}
-			else
-			{
-				sendMessageToClient("usernotfound", accept_client);
-				close(accept_client);
-			}
-			char* rcvdPwd = receiveMessageFromClient(accept_client);
-			// printf("Received password is %s\n", rcvdPwd);
-			// Check whether the password is correct.
-			char* corrPwd = validPassword(clientName);
-			char* keyStr = concat(corrPwd, intBuf);
-			char* cryptKey = crypt(keyStr, "salt");
-			// printf("Correct key should be: %s\n", cryptKey);
-			if(strcmp(cryptKey, rcvdPwd) == 0)
-			{
-				sendMessageToClient("keycorrect", accept_client);
-				printf("%s is accessing information!\n", clientName);
-			}
-			else
-			{
-				sendMessageToClient("keyerror", accept_client);
-				close(accept_client);
-			}
-			// Receive command from client.
-			char* cmd = receiveMessageFromClient(accept_client);
-			char* dupCmd = strdup(cmd);
-			// printf("command received is %s\n", cmd);
-			int cmdCnt = countInputs(dupCmd);
-			// printf("cmdcnt is %d\n", cmdCnt);
-			char* cmdArr[cmdCnt + 1];
-			storeInputs(cmdArr, cmd, cmdCnt + 1);
-			// printf("After function\n");
-			cmdArr[cmdCnt] = (char*)NULL;
-			// printf("After print\n");
-			// Use dup2 to redirect output.
-			dup2(accept_client, STDOUT_FILENO);
-			dup2(accept_client, STDERR_FILENO);
-			close(accept_client);
-			int eRtn = execvp(*cmdArr, cmdArr);
-			if(eRtn)
-			{
-				perror("execvp()");
-				exit(-1);
-			}
+			getUsername();
+			getPassword();
+			getCommand();
 		}
 		else
 		{
-			// close accept_client.
 			close(accept_client);
-
-			// call waitpid to free resources.
 			waitpid_call = waitpid(-1, &status, WNOHANG);
-			// Free all finished processes.
 			ERROR_waitpid_call();
 			continue;
 		}
 	}
 }
 
-/* counts commands from command line */
-int countInputs(char* cmd)
-{
-	int cmdCnt = 0;
-	char* token;
-	token = strtok(cmd, " ");
-	while(token != NULL)
-	{
-		cmdCnt ++;
-		token = strtok(NULL, " ");
-	}
-	return cmdCnt;
-}
-
-/* stores commands from command line */
-void storeInputs(char** cmdArr, char* cmd, int arrSize)
-{
-	int i = 0;
-	char* token;
-	token = strtok(cmd, " ");
-	cmdArr[i] = strdup(token);
-	while(token != NULL)
-	{
-		i ++;
-		token = strtok(NULL, " ");
-		if(token == NULL)
-		{
-			break;
-		}
-		// cmdArr[i] = strdup(token);
-		cmdArr[i] = token;
-	}
-	return;
-}
-
 /* send message to client */
-int sendMessageToClient(char* msg, int sock)
+int sendMessageToClient(char* message, int sock)
 {
 	char termiStr[2] = {4, '\0'};
-	if(write(sock, msg, strlen(msg)) == -1)
-	{
-		perror("write()");
-		exit(-1);
-	}
-	if(write(sock, termiStr, strlen(termiStr)) == -1)
+	if((write(sock, message, strlen(message)) == -1) || (write(sock, termiStr, strlen(termiStr)) == -1))
 	{
 		perror("write()");
 		exit(-1);
@@ -220,11 +174,11 @@ int sendMessageToClient(char* msg, int sock)
 /* receive message from client */
 char* receiveMessageFromClient(int sock)
 {
-	char msgBuf[BUFSIZE];
-	char* msg = "";
+	char messageBuf[BUFSIZE];
+	char* message = "";
 	while(1)
 	{
-		bytes = read(sock, msgBuf, BUFSIZE);
+		bytes = read(sock, messageBuf, BUFSIZE);
 		if(bytes == 0)
 		{
 			printf("Client disconnected!\n");
@@ -232,32 +186,47 @@ char* receiveMessageFromClient(int sock)
 		}
 		else if(bytes < 0)
 		{
-			printf("%s entered password incorrectly.\n", clientName);
+			printf("'%s' entered password incorrectly.\n", clientName);
 			exit(-1);
 		}
 		else
 		{
-			int termLoc = containToken(msgBuf, bytes);
-			if(termLoc >= 0)
+			terminatorLocation = containToken(messageBuf, bytes);
+			if(terminatorLocation >= 0)
 			{
-				msgBuf[termLoc] = '\0';
-				msg = concat(msg, msgBuf);
-				return msg;
+				messageBuf[terminatorLocation] = '\0';
+				message = concat(message, messageBuf);
+				return message;
 			}
 			else
 			{
-				msgBuf[bytes] = '\0';
-				msg = concat(msg, msgBuf);
+				messageBuf[bytes] = '\0';
+				message = concat(message, messageBuf);
 			}
 		}
 	}
+}
 
+/* get username from Client */
+void getUsername()
+{
+	clientName = receiveMessageFromClient(accept_client);
+	if(validUsername(clientName))
+	{
+		randomNumber = rand();
+		sprintf(buffer, "%d", randomNumber);
+		sendMessageToClient(buffer, accept_client);
+	}
+	else
+	{
+		sendMessageToClient("usernotfound", accept_client);
+		close(accept_client);
+	}
 }
 
 /* checks username */
 char* validUsername(char* name)
 {
-	int i;
 	for(i = 0; i < USERCNT; i ++)
 	{
 		if(strcmp(name, valid_username[i]) == 0)
@@ -267,10 +236,28 @@ char* validUsername(char* name)
 	}
 	return "";
 }
+
+/* get password from Client */
+void getPassword()
+{
+	attemptPassword = receiveMessageFromClient(accept_client);
+	correctPassword = validPassword(clientName);
+	keyPassword = concat(correctPassword, buffer);
+	encryptKey = crypt(keyPassword, "salt");
+	if(strcmp(encryptKey, attemptPassword) == 0)
+	{
+		sendMessageToClient("keycorrect", accept_client);
+	}
+	else
+	{
+		sendMessageToClient("keyerror", accept_client);
+		close(accept_client);
+	}
+}
+
 /* checks password */
 char* validPassword(char* clientName)
 {
-	int i;
 	for(i = 0; i < USERCNT; i ++)
 	{
 		if(strcmp(clientName, valid_username[i]) == 0)
@@ -281,65 +268,24 @@ char* validPassword(char* clientName)
 	return "";
 }
 
-/* set server to connect to */
-void setServer()
-{	
-	bzero((char*) &server_address, sizeof(server_address));
-
-	server_address.sin_family = AF_INET;
-	server_address.sin_addr.s_addr = htonl(INADDR_ANY);
-	server_address.sin_port = htons(port);
-	
-	ERROR_socket_call();
-	ERROR_bind_call();
-	ERROR_listen_call();
-}
-
-
-
-/* ERROR HANDLERS */
-
-/* bind */
-void ERROR_bind_call()
+/* get command from Client */
+void getCommand()
 {
-	if(bind(sock, (struct sockaddr *)&server_address, sizeof(server_address)) < 0)
-	{
-		perror("bind()");
-		exit(-1);
-	}
-}
+	command = receiveMessageFromClient(accept_client);
+	printf("'%s' is accessing information with the '%s' command!\n", clientName, command);
+	dupCommand = strdup(command);
+	commandCount = countInputs(dupCommand);
+	char* commandArray[commandCount + 1];
+	storeInputs(commandArray, command, commandCount + 1);
+	commandArray[commandCount] = (char*)NULL;
 
-/* listen */
-void ERROR_listen_call()
-{
-	if(listen(sock, 5))
-	{
-		perror("listen()");
-		exit(-1);
-	}
-}
+	/* dup2 to redirect output */
+	dup2(accept_client, STDOUT_FILENO);
+	dup2(accept_client, STDERR_FILENO);
 
-/* accept */
-void ERROR_accept_call()
-{
-	if(accept_client < 0)
-	{
-		perror("accept()");
-		exit(-1);
-	}
-}
-/* waitpid */
-void ERROR_waitpid_call()
-{
-	while(waitpid_call > 0)
-	{
-		waitpid_call = waitpid(-1, &status, WNOHANG);
-	}
-	if(waitpid_call < 0)
-	{
-		perror("waitpid()");
-		exit(-1);
-	}
+	close(accept_client);
+	execvp_call = execvp(*commandArray, commandArray);
+	ERROR_execvp_call();
 }
 
 
@@ -355,7 +301,6 @@ void usage()
 	printf("  -p (optional) port: default is 4513\n");
 	printf("******************************************\n");
 }
-
 
 /* checks flag of input */
 void flagCheck(int argc, char **argv)

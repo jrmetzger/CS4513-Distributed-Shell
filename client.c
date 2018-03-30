@@ -26,11 +26,8 @@
 
 unsigned long int inAddr;
 
-int i;
 int bytes;
-int port=4513;
-int option;
-int bytes;
+int port = PORT;
 int terminatorLocation;
 
 struct hostent *host;

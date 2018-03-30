@@ -27,6 +27,7 @@
 
 #define BUFSIZE 1024
 #define USERCNT 5
+#define PORT 4513
 
 /* COMMON */
 
@@ -45,16 +46,16 @@ int containToken(char* receiveMessageFromClient, int size);
 void ERROR_socket_call();
 /* connect */
 void ERROR_connect_call();
-/* listen */
-void ERROR_listen_call();
 /* bind */
 void ERROR_bind_call();
+/* listen */
+void ERROR_listen_call();
 /* accept */
 void ERROR_accept_call();
 /* waitpid */
 void ERROR_waitpid_call();
-/* read */
-int ERROR_read_call();
+/* execvp */
+void ERROR_execvp_call();
 
 /* CLIENT */
 
@@ -81,21 +82,23 @@ int submitInput(int sock);
 int countInputs(char* command);
 /* stores commands from command line */
 void storeInputs(char** command_array, char* command, int size_array);
-/* send message to client */
-int sendMessageToClient(char* msg, int sock);
-/* receive message from client */
-char* receiveMessageFromClient(int sock);
-/* checks username */
-char* validUsername(char* name);
-/* checks password */
-char* validPassword(char* client_name);
 /* set server to connect to */
 void setServer();
 /* open the server */
 void openServer();
-
-
-
-
+/* send message to client */
+int sendMessageToClient(char* msg, int sock);
+/* receive message from client */
+char* receiveMessageFromClient(int sock);
+/* get username from Client */
+void getUsername();
+/* checks username */
+char* validUsername(char* name);
+/* get password from Client */
+void getPassword();
+/* checks password */
+char* validPassword(char* client_name);
+/* get command from Client */
+void getCommand();
 
 

@@ -48,7 +48,7 @@ usage: ./client [flags] {-c command}
 ******************************************
 ```
 
-####Run the Client 
+#### Run the Client 
 
 CORRECT CREDENTIALS
 
