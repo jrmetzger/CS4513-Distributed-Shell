@@ -18,8 +18,8 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <crypt.h>
 #include <sys/stat.h>
+#include <crypt.h>
 #include <fcntl.h>
 #include <time.h>
 #include <sys/wait.h>
