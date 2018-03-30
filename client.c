@@ -1,0 +1,270 @@
+
+/*
+ * client.c
+ * 
+ * Jonathan Metzger
+ * Spring 2018
+ *
+ * Project for CS4513 Distributed Computing Systems
+ *
+ */
+
+#include "common.h"
+#include "common.c"
+
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <netdb.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <crypt.h>
+
+
+unsigned long int inAddr;
+
+int i;
+int bytes;
+int port=4513;
+int option;
+int bytes;
+int terminatorLocation;
+
+struct hostent *host;
+
+char* server_address="";
+char* username="";
+char* password;
+char* salt = "salt";
+char* command = "";
+char* check_username;
+char* password_key;
+char* password_encrypt;
+char* check_password;
+char messageBuf[BUFSIZE];
+char* message = "";
+
+/* main */
+int main(int argc, char** argv)
+{
+	/* flag input */
+	flagCheck(argc, argv);
+
+	/* talk to server */
+	checkServer();
+	checkCredentials();
+
+	/* check the server */
+	submitInput(sock);
+}
+
+
+/* get the host or address */
+void getHost()
+{
+	if((host = gethostbyname(server_address)) == NULL)
+	{
+		perror("gethostbyname()");
+		exit(-1);
+	}
+}
+
+/* check the server or host and connect via a socket*/
+void checkServer()
+{
+	/* free */
+	bzero((void *)&serv, sizeof(serv));
+
+	getHost();
+	
+	/* copy */
+	bcopy(host->h_addr, (char *)&serv.sin_addr, host->h_length);
+	
+	/* put in struct */
+	serv.sin_family = AF_INET;
+	serv.sin_port = htons(port);
+
+	ERROR_socket_call();
+	ERROR_connect_call();
+}
+
+/* send message */
+int sendMessageToServer(char* message, int sock)
+{
+	char terminate_string[2] = {4, '\0'};
+	if((write(sock, message, strlen(message)) == -1) || (write(sock, terminate_string, strlen(terminate_string)) == -1) )
+	{
+		perror("write()");
+		exit(-1);
+	}
+	return 0;
+}
+
+/* get message from server */
+char* receiveMessageFromServer(int sock)
+{
+	while(1)
+	{
+		bytes = read(sock, messageBuf, BUFSIZE);
+		if(bytes == 0)
+		{
+			printf("\n** Client is now disconnected. **\n\n");
+		}
+		else if(bytes < 0)
+		{
+			perror("read()");
+			exit(-1);
+		}
+		else
+		{
+			terminatorLocation = containToken(messageBuf, bytes);
+			if(terminatorLocation >= 0)
+			{
+				messageBuf[terminatorLocation] = '\0';
+				message = concat(message, messageBuf);
+				return message;
+			}
+			else
+			{
+				messageBuf[bytes] = '\0';
+				message = concat(message, messageBuf);
+			}
+		}
+	}	
+}
+
+/* checks for valid username */
+void checkUsername()
+{
+	if(strcmp(check_username, "usernotfound") == 0)
+	{
+		printf("\n** ERROR: username not found. **\n\n");
+		exit(-1);
+	}
+}
+
+/* checks for valid password */
+void checkPassword()
+{
+	if(strcmp(check_password, "keyerror") == 0)
+	{
+		fprintf(stderr, "\n** ERROR: Credentials don't match. Exiting... **\n\n");
+		exit(-1);
+	}
+	else
+	{
+		printf("\n ** Password is correct. Accessing information. **\n\n");
+		sendMessageToServer(command, sock);
+	}
+}
+
+/* ask for username and checks if valid */
+void checkCredentials()
+{
+	/* ask for username */
+	sendMessageToServer(username, sock);
+	check_username = receiveMessageFromServer(sock);
+	checkUsername();
+
+	printf("Username: %s\n", username);
+	password = getpass("Password: ");
+
+	/* ask for password */
+	password_key = concat(password, check_username);
+	password_encrypt = crypt(password_key, salt);
+	sendMessageToServer(password_encrypt, sock);
+	
+	free(check_username);
+	free(password_key);
+
+	check_password = receiveMessageFromServer(sock);
+	checkPassword();
+}
+
+/* receive commands from command line */
+int submitInput(int sock)
+{
+	while(1)
+	{
+		bytes = read(sock, messageBuf, BUFSIZE);
+		if(bytes == 0)
+		{
+			return 0;
+		}
+		else if(bytes < 0)
+		{
+			perror("read()");
+			exit(-1);
+		}
+		else
+		{
+			messageBuf[bytes] = '\0';
+			printf("%s", messageBuf);
+		}
+	}
+	close(sock);
+}
+
+/* SIMILAR FUNCTIONS */
+
+/* usage message */
+void usage()
+{
+	printf("******** Distributed Shell Client ********\n");
+	printf("Jonathan Metzger ~ April 5th 2018 ~ CS4513\n");
+	printf("usage: ./client [flags] {-c command}\n");
+	printf("  -h usage message\n");
+	printf("  -s server\n");
+	printf("  -p (optional) port: default is 4513\n");
+	printf("  -u username\n");
+	printf("  -c 'command'\n");
+	printf("******************************************\n");
+}
+
+/* checks flag of input */
+void flagCheck(int argc, char **argv)
+{
+    while ((option = getopt (argc, argv, "hc:s:p:u:")) != -1)
+    {
+        switch (option)
+        {
+
+        	/* -c command */
+            case 'c':
+            command = optarg;
+            break;
+
+        	/* -s host */
+            case 's':
+            server_address = optarg;
+            break;
+
+       		/* port */
+            case 'p':
+            port = atoi(optarg);
+            break;
+
+            /* help message */
+            case 'h':
+			usage();
+			exit(1);
+            break;
+
+            case 'u':
+            username = optarg;
+            break;
+
+            default:
+            exit(-1);
+
+        }
+    }
+
+    if (strlen(command) == 0 || strlen(server_address) == 0 || strlen(username) == 0) {
+		usage();
+		exit(1);
+	}
+}
