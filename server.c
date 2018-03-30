@@ -348,11 +348,12 @@ void ERROR_waitpid_call()
 /* usage message */
 void usage()
 {
-	printf("*** Distributed Shell Client (SERVER) ***\n");
-	printf("\nJonathan Metzger ~ April 5th 2018 ~ CS4513\n");
+	printf("******** Distributed Shell Server ********\n");
+	printf("Jonathan Metzger ~ April 5th 2018 ~ CS4513\n");
 	printf("usage: ./server [flags]\n");
 	printf("  -h usage message\n");
 	printf("  -p (optional) port: default is 4513\n");
+	printf("******************************************\n");
 }
 
 
