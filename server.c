@@ -9,39 +9,8 @@
  *
  */
 
-/* client send username to server (not password) */
-
-/* server responds by sending back unique random number */
-
-/* Client encrypts using user’s password plus number as key */
-
-/* Client sends hashed/encrypted value back to server */
-
-/* Server encrypts using the user’s same password plus number as key */
-
-/* Server compares two hashed/encrypted values, if same then ok */
-
-
 #include "common.h"
 #include "common.c"
-
-#include <stdio.h>
-#include <string.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <netdb.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-
-#include <sys/wait.h>
-
-#include <crypt.h>
-
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <time.h>
 
 /* set credentials */
 char* valid_username[USERCNT] = {"user1", "user2", "user3", "user4", "user5"};
@@ -215,12 +184,14 @@ void getUsername()
 	{
 		randomNumber = rand();
 		sprintf(buffer, "%d", randomNumber);
+
+		/* server responds by sending back unique random number */
 		sendMessageToClient(buffer, accept_client);
 	}
 	else
 	{
 		sendMessageToClient("usernotfound", accept_client);
-		close(accept_client);
+		exit(-1);
 	}
 }
 
@@ -240,10 +211,13 @@ char* validUsername(char* name)
 /* get password from Client */
 void getPassword()
 {
+	/* Server encrypts using the user’s same password plus number as key */
 	attemptPassword = receiveMessageFromClient(accept_client);
 	correctPassword = validPassword(clientName);
 	keyPassword = concat(correctPassword, buffer);
 	encryptKey = crypt(keyPassword, "salt");
+
+	/* Server compares two hashed/encrypted values, if same then ok */
 	if(strcmp(encryptKey, attemptPassword) == 0)
 	{
 		sendMessageToClient("keycorrect", accept_client);

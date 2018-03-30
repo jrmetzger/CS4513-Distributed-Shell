@@ -12,6 +12,18 @@
 
 #include "common.h"
 
+/* client send username to server (not password) */
+
+/* server responds by sending back unique random number */
+
+/* Client encrypts using user’s password plus number as key */
+
+/* Client sends hashed/encrypted value back to server */
+
+/* Server encrypts using the user’s same password plus number as key */
+
+/* Server compares two hashed/encrypted values, if same then ok */
+
 int sock;
 int i;
 int option;

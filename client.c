@@ -12,18 +12,6 @@
 #include "common.h"
 #include "common.c"
 
-#include <stdio.h>
-#include <string.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <netdb.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <crypt.h>
-
-
 unsigned long int inAddr;
 
 int bytes;
@@ -161,17 +149,24 @@ void checkPassword()
 /* ask for username and checks if valid */
 void checkCredentials()
 {
+
+	/* client send username to server (not password) */
+
 	/* ask for username */
 	sendMessageToServer(username, sock);
 	check_username = receiveMessageFromServer(sock);
 	checkUsername();
 
 	printf("Username: %s\n", username);
-	password = getpass("Password: ");
-
+	
 	/* ask for password */
+	password = getpass("Password: ");
 	password_key = concat(password, check_username);
+
+	/* Client encrypts using user’s password plus number as key */
 	password_encrypt = crypt(password_key, salt);
+
+	/* Client sends hashed/encrypted value back to server */
 	sendMessageToServer(password_encrypt, sock);
 	
 	free(check_username);
