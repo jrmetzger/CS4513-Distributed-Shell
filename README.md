@@ -8,16 +8,22 @@ Hugh C. Lauer
 
 ### TERMINAL 1
 
+Help Usage Message
+
 ```
 $ ./server -h
 
-```
+
 ******** Distributed Shell Server ********
 Jonathan Metzger ~ April 5th 2018 ~ CS4513
 usage: ./server [flags]
   -h usage message
   -p (optional) port: default is 4513
 ******************************************
+```
+
+
+Run the Server
 
 ```
 $ ./server -p 1234
@@ -27,9 +33,11 @@ user entered password incorrectly.
 
 ### TERMINAL 2
 
+Help Usage Message
+
 ```
 $ ./client -h
-```
+
 ******** Distributed Shell Client ********
 Jonathan Metzger ~ April 5th 2018 ~ CS4513
 usage: ./client [flags] {-c command}
@@ -39,8 +47,12 @@ usage: ./client [flags] {-c command}
   -u username
   -c 'command'
 ******************************************
+```
+
+Run the Client 
 
 CORRECT CREDENTIALS
+
 ```
 $ ./client -s localhost -p 1234 -u user -c "ls"
 Username: user
@@ -50,6 +62,7 @@ Password:
 ```
 
 INCORRECT CREDENTIALS
+
 ```
 $ ./client -s localhost -p 1234 -u user -c "ls"
 Username: user
