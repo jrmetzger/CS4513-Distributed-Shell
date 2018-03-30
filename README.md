@@ -13,7 +13,6 @@ Help Usage Message
 ```
 $ ./server -h
 
-
 ******** Distributed Shell Server ********
 Jonathan Metzger ~ April 5th 2018 ~ CS4513
 usage: ./server [flags]
@@ -23,7 +22,7 @@ usage: ./server [flags]
 ```
 
 
-Run the Server
+#### Run the Server
 
 ```
 $ ./server -p 1234
@@ -33,7 +32,7 @@ user entered password incorrectly.
 
 ### TERMINAL 2
 
-Help Usage Message
+#### Help Usage Message
 
 ```
 $ ./client -h
@@ -49,7 +48,7 @@ usage: ./client [flags] {-c command}
 ******************************************
 ```
 
-Run the Client 
+####Run the Client 
 
 CORRECT CREDENTIALS
 
