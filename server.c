@@ -16,7 +16,7 @@
 char* valid_username[USERCNT] = {"user1", "user2", "user3", "user4", "user5"};
 char* valid_password[USERCNT] = {"pass1", "pass2", "pass3", "pass4", "pass5"};
 
-char* clientName = NULL;
+char* name = NULL;
 char buffer[BUFSIZE];
 char* token = NULL;
 char* attemptPassword = NULL;
@@ -155,7 +155,7 @@ char* receiveMessageFromClient(int sock)
 		}
 		else if(bytes < 0)
 		{
-			printf("'%s' entered password incorrectly.\n", clientName);
+			printf("'%s' entered password incorrectly.\n", name);
 			exit(-1);
 		}
 		else
@@ -179,8 +179,8 @@ char* receiveMessageFromClient(int sock)
 /* get username from Client */
 void getUsername()
 {
-	clientName = receiveMessageFromClient(accept_client);
-	if(validUsername(clientName))
+	name = receiveMessageFromClient(accept_client);
+	if(validUsername(name))
 	{
 		randomNumber = rand();
 		sprintf(buffer, "%d", randomNumber);
@@ -213,7 +213,7 @@ void getPassword()
 {
 	/* Server encrypts using the user’s same password plus number as key */
 	attemptPassword = receiveMessageFromClient(accept_client);
-	correctPassword = validPassword(clientName);
+	correctPassword = validPassword(name);
 	keyPassword = concat(correctPassword, buffer);
 	encryptKey = crypt(keyPassword, "salt");
 
@@ -230,11 +230,11 @@ void getPassword()
 }
 
 /* checks password */
-char* validPassword(char* clientName)
+char* validPassword(char* name)
 {
 	for(i = 0; i < USERCNT; i ++)
 	{
-		if(strcmp(clientName, valid_username[i]) == 0)
+		if(strcmp(name, valid_username[i]) == 0)
 		{
 			return valid_password[i];
 		}
@@ -246,7 +246,7 @@ char* validPassword(char* clientName)
 void getCommand()
 {
 	command = receiveMessageFromClient(accept_client);
-	printf("'%s' is accessing information with the '%s' command!\n", clientName, command);
+	printf("'%s' is accessing information with the '%s' command!\n", name, command);
 	dupCommand = strdup(command);
 	commandCount = countInputs(dupCommand);
 	char* commandArray[commandCount + 1];

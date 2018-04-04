@@ -86,6 +86,8 @@ OR
 $ ssh -i CS4513.pem ubuntu@18.222.16.160
 ```
 
+IP ADDRESS is 18.222.16.160
+
 ### Copy File to Server
 
 ```
@@ -98,10 +100,11 @@ $ sudo scp -i "CS4513.pem" CS4513-Distributed-Shell.zip ubuntu@ec2-18-222-16-160
 
 ```
 ubuntu@ip-172-31-38-241:~$ ./server -p 1234
-
 ```
 
 #### TERMINAL 2: CLIENT
 
-
+```
+$ ./client -s 18.222.16.160 -p 1234 -u user -c "ls"
+```
 

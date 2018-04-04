@@ -1,0 +1,228 @@
+Created test1.txt with Filesize 1 MB
+Created test2.txt with Filesize 2 MB
+Created test3.txt with Filesize 3 MB
+Created test4.txt with Filesize 4 MB
+Created test5.txt with Filesize 5 MB
+Created test6.txt with Filesize 6 MB
+Created test7.txt with Filesize 7 MB
+Created test8.txt with Filesize 8 MB
+Created test9.txt with Filesize 9 MB
+Created test10.txt with Filesize 10 MB
+Created test11.txt with Filesize 11 MB
+Created test12.txt with Filesize 12 MB
+Created test13.txt with Filesize 13 MB
+Created test14.txt with Filesize 14 MB
+Created test15.txt with Filesize 15 MB
+Created test16.txt with Filesize 16 MB
+Created test17.txt with Filesize 17 MB
+Created test18.txt with Filesize 18 MB
+Created test19.txt with Filesize 19 MB
+Created test20.txt with Filesize 20 MB
+> [ Moving 20 files over the local server ]
+Username: user1
+Password: pass1
+
+ ** Password is correct. Accessing information. **
+
+
+Moving test1.txt in 144 milliseconds
+Username: user1
+Password: pass1
+
+ ** Password is correct. Accessing information. **
+
+
+Moving test2.txt in 140 milliseconds
+Username: user1
+Password: pass1
+
+ ** Password is correct. Accessing information. **
+
+
+Moving test3.txt in 139 milliseconds
+Username: user1
+Password: pass1
+
+ ** Password is correct. Accessing information. **
+
+
+Moving test4.txt in 141 milliseconds
+Username: user1
+Password: pass1
+
+ ** Password is correct. Accessing information. **
+
+
+Moving test5.txt in 142 milliseconds
+Username: user1
+Password: pass1
+
+ ** Password is correct. Accessing information. **
+
+
+Moving test6.txt in 143 milliseconds
+Username: user1
+Password: pass1
+
+ ** Password is correct. Accessing information. **
+
+
+Moving test7.txt in 141 milliseconds
+Username: user1
+Password: pass1
+
+ ** Password is correct. Accessing information. **
+
+
+Moving test8.txt in 138 milliseconds
+Username: user1
+Password: pass1
+
+ ** Password is correct. Accessing information. **
+
+
+Moving test9.txt in 138 milliseconds
+Username: user1
+Password: pass1
+
+ ** Password is correct. Accessing information. **
+
+
+Moving test10.txt in 141 milliseconds
+Username: user1
+Password: pass1
+
+ ** Password is correct. Accessing information. **
+
+
+Moving test11.txt in 138 milliseconds
+Username: user1
+Password: pass1
+
+ ** Password is correct. Accessing information. **
+
+
+Moving test12.txt in 140 milliseconds
+Username: user1
+Password: pass1
+
+ ** Password is correct. Accessing information. **
+
+
+Moving test13.txt in 141 milliseconds
+Username: user1
+Password: pass1
+
+ ** Password is correct. Accessing information. **
+
+
+Moving test14.txt in 144 milliseconds
+Username: user1
+Password: pass1
+
+ ** Password is correct. Accessing information. **
+
+
+Moving test15.txt in 140 milliseconds
+Username: user1
+Password: pass1
+
+ ** Password is correct. Accessing information. **
+
+
+Moving test16.txt in 145 milliseconds
+Username: user1
+Password: pass1
+
+ ** Password is correct. Accessing information. **
+
+
+Moving test17.txt in 139 milliseconds
+Username: user1
+Password: pass1
+
+ ** Password is correct. Accessing information. **
+
+
+Moving test18.txt in 140 milliseconds
+Username: user1
+Password: pass1
+
+ ** Password is correct. Accessing information. **
+
+
+Moving test19.txt in 138 milliseconds
+Username: user1
+Password: pass1
+
+ ** Password is correct. Accessing information. **
+
+
+Moving test20.txt in 138 milliseconds
+20 Conections in 2810 milliseconds
+Average Conections in 140 milliseconds
+----------------------------------
+Created test1.txt with Filesize 1 MB
+Created test2.txt with Filesize 2 MB
+Created test3.txt with Filesize 3 MB
+Created test4.txt with Filesize 4 MB
+Created test5.txt with Filesize 5 MB
+Created test6.txt with Filesize 6 MB
+Created test7.txt with Filesize 7 MB
+Created test8.txt with Filesize 8 MB
+Created test9.txt with Filesize 9 MB
+Created test10.txt with Filesize 10 MB
+Created test11.txt with Filesize 11 MB
+Created test12.txt with Filesize 12 MB
+Created test13.txt with Filesize 13 MB
+Created test14.txt with Filesize 14 MB
+Created test15.txt with Filesize 15 MB
+Created test16.txt with Filesize 16 MB
+Created test17.txt with Filesize 17 MB
+Created test18.txt with Filesize 18 MB
+Created test19.txt with Filesize 19 MB
+Created test20.txt with Filesize 20 MB
+> [ Moving 20 files over the AWS server ]
+
+Moving test1.txt in 281 milliseconds
+
+Moving test2.txt in 385 milliseconds
+
+Moving test3.txt in 222 milliseconds
+
+Moving test4.txt in 1217 milliseconds
+
+Moving test5.txt in 61 milliseconds
+
+Moving test6.txt in 130 milliseconds
+
+Moving test7.txt in 91 milliseconds
+
+Moving test8.txt in 111 milliseconds
+
+Moving test9.txt in 63 milliseconds
+
+Moving test10.txt in 92 milliseconds
+
+Moving test11.txt in 138 milliseconds
+
+Moving test12.txt in 79 milliseconds
+
+Moving test13.txt in 100 milliseconds
+
+Moving test14.txt in 119 milliseconds
+
+Moving test15.txt in 160 milliseconds
+
+Moving test16.txt in 233 milliseconds
+
+Moving test17.txt in 231 milliseconds
+
+Moving test18.txt in 169 milliseconds
+
+Moving test19.txt in 168 milliseconds
+
+Moving test20.txt in 1143 milliseconds
+20 Conections in 5193 milliseconds
+Average Conections in 259 milliseconds
+----------------------------------

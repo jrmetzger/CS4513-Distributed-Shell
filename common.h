@@ -96,7 +96,7 @@ char* validUsername(char* name);
 /* get password from Client */
 void getPassword();
 /* checks password */
-char* validPassword(char* client_name);
+char* validPassword(char* name);
 /* get command from Client */
 void getCommand();
 
