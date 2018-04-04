@@ -1,12 +1,18 @@
 # Project 2: Distributed Shell
 Jon Metzger
-April 5th 2018
+April 4th 2018
 CS4513 Distrubuted Systems
 Hugh C. Lauer
 
 ## RUN
 
-### TERMINAL 1
+```
+$ make
+$ make clean
+$ make
+```
+
+### TERMINAL 1: Server
 
 Help Usage Message
 
@@ -30,7 +36,7 @@ user is accessing information!
 user entered password incorrectly.
 ```
 
-### TERMINAL 2
+### TERMINAL 2: Client
 
 #### Help Usage Message
 
