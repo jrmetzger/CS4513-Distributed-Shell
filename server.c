@@ -132,8 +132,8 @@ void openServer()
 /* send message to client */
 int sendMessageToClient(char* message, int sock)
 {
-	char termiStr[2] = {4, '\0'};
-	if((write(sock, message, strlen(message)) == -1) || (write(sock, termiStr, strlen(termiStr)) == -1))
+	char terminator[2] = {4, '\0'};
+	if((write(sock, message, strlen(message)) == -1) || (write(sock, terminator, strlen(terminator)) == -1))
 	{
 		perror("write()");
 		exit(-1);

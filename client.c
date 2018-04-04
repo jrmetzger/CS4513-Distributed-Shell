@@ -17,6 +17,7 @@ unsigned long int inAddr;
 int bytes;
 int port = PORT;
 int terminatorLocation;
+int w_flag;
 
 struct hostent *host;
 
@@ -31,6 +32,7 @@ char* password_encrypt;
 char* check_password;
 char messageBuf[BUFSIZE];
 char* message = "";
+char* symbol = "@";
 
 /* main */
 int main(int argc, char** argv)
@@ -50,23 +52,26 @@ int main(int argc, char** argv)
 /* get the host or address */
 void getHost()
 {
-	if((host = gethostbyname(server_address)) == NULL)
+
+	/* free */
+	bzero((void *)&serv, sizeof(serv));
+
+	host = gethostbyname(server_address);
+	if(host == NULL)
 	{
+		//printf("HELLO\n\n");
 		perror("gethostbyname()");
 		exit(-1);
 	}
+
+	/* copy */
+	bcopy(host->h_addr, (char *)&serv.sin_addr, host->h_length);
 }
 
 /* check the server or host and connect via a socket*/
 void checkServer()
 {
-	/* free */
-	bzero((void *)&serv, sizeof(serv));
-
 	getHost();
-	
-	/* copy */
-	bcopy(host->h_addr, (char *)&serv.sin_addr, host->h_length);
 	
 	/* put in struct */
 	serv.sin_family = AF_INET;
@@ -124,11 +129,13 @@ char* receiveMessageFromServer(int sock)
 /* checks for valid username */
 void checkUsername()
 {
-	if(strcmp(check_username, "usernotfound") == 0)
+	int s = strcmp(check_username, "usernotfound");
+	if(s == 0)
 	{
 		printf("\n** ERROR: username not found. **\n\n");
 		exit(-1);
 	}
+	//printf("USERNAME IS:%d", s);
 }
 
 /* checks for valid password */
@@ -160,7 +167,12 @@ void checkCredentials()
 	printf("Username: %s\n", username);
 	
 	/* ask for password */
-	password = getpass("Password: ");
+	if(!w_flag)
+	{
+		password = getpass("Password: ");
+	}
+	printf("Password: %s\n", password);
+
 	password_key = concat(password, check_username);
 
 	/* Client encrypts using user’s password plus number as key */
@@ -212,6 +224,7 @@ void usage()
 	printf("  -s server\n");
 	printf("  -p (optional) port: default is 4513\n");
 	printf("  -u username\n");
+	printf("  -w password\n");
 	printf("  -c 'command'\n");
 	printf("******************************************\n");
 }
@@ -219,7 +232,7 @@ void usage()
 /* checks flag of input */
 void flagCheck(int argc, char **argv)
 {
-    while ((option = getopt (argc, argv, "hc:s:p:u:")) != -1)
+    while ((option = getopt (argc, argv, "hc:s:p:u:w:")) != -1)
     {
         switch (option)
         {
@@ -231,7 +244,25 @@ void flagCheck(int argc, char **argv)
 
         	/* -s host */
             case 's':
-            server_address = optarg;
+            
+
+        	/* read after "@" symbol */
+        	
+            if(strchr(optarg, *symbol) != NULL)
+            {
+            	server_address = strstr(optarg, symbol);
+        	
+        		if (server_address)
+        		{ 
+        			server_address++;
+        		}
+            }
+            else
+            {
+	            server_address = optarg;
+	        }
+	        //printf("%s\n", server_address);
+	        //exit(-1);
             break;
 
        		/* port */
@@ -245,6 +276,13 @@ void flagCheck(int argc, char **argv)
 			exit(1);
             break;
 
+            /* set password */
+            case 'w':
+            password = optarg;
+            w_flag++;
+            break;
+
+            /* set username */
             case 'u':
             username = optarg;
             break;

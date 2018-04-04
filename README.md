@@ -44,6 +44,7 @@ usage: ./client [flags] {-c command}
   -s server
   -p (optional) port: default is 4513
   -u username
+  -w password
   -c 'command'
 ******************************************
 ```
@@ -53,7 +54,7 @@ usage: ./client [flags] {-c command}
 CORRECT CREDENTIALS
 
 ```
-$ ./client -s localhost -p 1234 -u user -c "ls"
+$ ./client -s localhost -p 1234 -u user -w password -c "ls"
 Username: user
 Password: 
 
@@ -71,6 +72,36 @@ Password:
 ```
 
 
+## AWS
+
+### SSH to Server
+
+```
+$ ssh -i CS4513.pem ubuntu@ec2-18-222-16-160.us-east-2.compute.amazonaws.com
+```
+
+OR 
+
+```
+$ ssh -i CS4513.pem ubuntu@18.222.16.160
+```
+
+### Copy File to Server
+
+```
+$ sudo scp -i "CS4513.pem" CS4513-Distributed-Shell.zip ubuntu@ec2-18-222-16-160.us-east-2.compute.amazonaws.com:/home/ubuntu
+```
+
+### Connect
+
+#### TERMINAL 1: SERVER
+
+```
+ubuntu@ip-172-31-38-241:~$ ./server -p 1234
+
+```
+
+#### TERMINAL 2: CLIENT
 
 
 
