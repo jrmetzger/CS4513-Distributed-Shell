@@ -7,6 +7,6 @@ server: server.c
 	gcc -g3 -o server server.c -lcrypt
 
 clean:
-	rm client server
+	rm client server test_documents/*
 
 
