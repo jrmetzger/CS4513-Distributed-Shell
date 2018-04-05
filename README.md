@@ -14,7 +14,7 @@ $ make
 
 ### TERMINAL 1: Server
 
-Help Usage Message
+#### Help Usage Message
 
 ```
 $ ./server -h
